@@ -1,0 +1,30 @@
+
+
+pragma solidity ^0.6.0;
+
+contract SimpleStorage{
+    uint256 public fNumber;
+
+    struct People{
+        uint256 fNumber;
+        string name;
+    }
+
+    People[] public people;
+
+
+
+    function store(uint256 _fnumber) public {
+        fNumber = _fnumber;
+
+    }
+
+    function retrieve() public view returns(uint256) {
+        return fNumber;
+    }
+
+    function addPerson(string memory _name, uint256 _fnumber) public {
+        people.push(People(_fnumber, _name));
+    }
+
+}

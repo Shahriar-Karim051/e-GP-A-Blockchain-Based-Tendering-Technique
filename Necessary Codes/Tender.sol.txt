@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity ^0.4.22;
+
+
+
+
+contract BiddingContract{
+    struct Bid{
+        address user;
+        uint bidAmount;
+    }
+    uint256 deadline;
+    uint256 v_deadline = 0;
+    uint Index;
+    string str = "Success";
+    address authority = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+    Bid[] AllBids;
+
+    constructor() public{
+        AllBids.push(Bid(0x0,0));
+
+    }
+    function setDeadline(uint256 numberOfDays) public{
+        require(msg.sender == authority);
+        require(v_deadline == 0);
+        deadline = now + (numberOfDays);
+        
+    }
+
+    function submitBid(uint _bidPrice) public{
+        require(msg.sender != authority);
+        require(now < deadline, "error");
+        AllBids.push(Bid(msg.sender, _bidPrice));
+
+    }
+    function setEvaluationTime(uint256 _numberOfDays) public{
+        require(msg.sender == authority);
+        v_deadline = now + (_numberOfDays);
+        
+    }
+    function selectTopBid(uint index) public returns(uint){
+        require(msg.sender == authority);
+        require(now > deadline);
+        Index = index;
+        return Index;
+
+
+    }
+
+    function getTopBid() public view returns(address, uint){
+        require(((msg.sender == authority) && (now > deadline)) || ((msg.sender != authority) && (now > v_deadline) && v_deadline != 0));
+        return (AllBids[Index].user, AllBids[Index].bidAmount);
+    }
+
+    function getNumberofBids() public view returns(uint){
+        require(((msg.sender == authority) && (now > deadline)) || ((msg.sender != authority) && (now > v_deadline) && v_deadline != 0));
+        return AllBids.length;
+    
+    }
+
+    function getBid(uint index) public view returns(address, uint){
+        require(((msg.sender == authority) && (now > deadline)) || ((msg.sender != authority) && (now > v_deadline) && v_deadline != 0));
+        return (AllBids[index].user, AllBids[index].bidAmount);
+    }
+
+    function remainingResultTime() public view returns(uint256){
+        require(now < v_deadline && v_deadline != 0);
+        return v_deadline - now;
+        
+    }
+
+    function remainingTime() public view returns(uint256){
+        require(now < deadline);
+        return deadline - now;
+        
+    }
+
+}
